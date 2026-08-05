@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: devops-eks-cluster
+  ECR_BACKEND_IMAGE: ${{ secrets.ECR_BACKEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend' }}
+  ECR_FRONTEND_IMAGE: ${{ secrets.ECR_FRONTEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend' }}
+
 jobs:
   # ==========================================
   # ETAPA 1: Integration & Unit Testing
@@ -53,7 +59,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: 🔑 Iniciar sesión en Amazon ECR
         id: login-ecr
@@ -70,8 +76,8 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: |
-            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend:latest
-            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend:v${{ github.run_number }}
+            ${{ env.ECR_BACKEND_IMAGE }}:latest
+            ${{ env.ECR_BACKEND_IMAGE }}:v${{ github.run_number }}
 
       # Build & Push Frontend
       - name: 🏗️ Construir y Publicar Imagen Frontend
@@ -81,8 +87,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend:latest
-            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend:v${{ github.run_number }}
+            ${{ env.ECR_FRONTEND_IMAGE }}:latest
+            ${{ env.ECR_FRONTEND_IMAGE }}:v${{ github.run_number }}
 
   # ==========================================
   # ETAPA 3: Despliegue Automatizado en AWS EKS
@@ -103,11 +109,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: 🚀 Rollout Automático en Amazon EKS
         run: |
-          aws eks update-kubeconfig --name devops-eks-cluster --region us-east-1
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
           kubectl rollout restart deployment/frontend-deployment
           kubectl rollout restart deployment/backend-deployment
           echo "✅ Rollout v${{ github.run_number }} desplegado automáticamente en EKS."
