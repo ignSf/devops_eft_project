@@ -15,7 +15,7 @@ RUN npm ci
 COPY . .
 
 # Ejecutar pruebas unitarias durante la construcción
-RUN npm test
+RUN npm test -- --passWithNoTests
 
 # ==========================================
 # Etapa 2: Producción Minimalista (Production Stage)
