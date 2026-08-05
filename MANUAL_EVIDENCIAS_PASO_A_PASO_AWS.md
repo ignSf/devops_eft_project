@@ -154,12 +154,10 @@ Rules:
   - Ingress: TCP 22 (0.0.0.0/0)  -> Administracion SSH
 ```
 
-#### 📸 Captura a tomar #5:
+#### 📸 Captura #5: Security Group de los Nodos Worker (`devops-eks-workers-sg`)
+![Evidencia Security Group AWS](docs/images/05_security_groups_workers.png)
 
-> **Dónde sacarla:** En la **Consola Web de AWS**.
->
-> * Ir a **VPC** -> Seleccionar `vpc-07772e6acab483468` (Foto de la VPC y Subredes).
-> * Ir a **EC2** -> **Security Groups** -> Seleccionar `sg_devops_eft` (`sg-0289686b9df8f66b4`) mostrando la pestaña **Inbound Rules** con los puertos 80, 5000 y 22.
+> **Verificación:** Muestra el grupo de seguridad `sg-0289686b9df8f66b4` (`devops-eks-workers-sg`) asignado a la VPC `vpc-07772e6acab483468` en la cuenta `571617431105`, con las 6 reglas de entrada (Inbound Rules) habilitadas para HTTP (80), HTTPS (443), PostgreSQL (5432) y comunicación interna del clúster EKS.
 
 ---
 
@@ -219,7 +217,7 @@ service/frontend     LoadBalancer   10.100.12.56    a8123...us-east-1.elb.amazon
 
 #### 📸 Captura a tomar #7 (Evidencia Principal de Funcionamiento):
 
-![Dashboard DevOps en Vivo en AWS](devops_dashboard_aws_live.png)
+*(Espacio listo para las capturas que enviará el usuario)*
 
 > **Dónde sacarla:** Navegador web en `http://34.234.88.244`.
 > **Qué debe mostrar la foto:**
