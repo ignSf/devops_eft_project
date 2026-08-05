@@ -36,10 +36,10 @@ jobs:
           npm test -- --passWithNoTests
 
   # ==========================================
-  # ETAPA 2: Build de Contenedores Docker Multietapa
+  # ETAPA 2: Build y Push de Contenedores Docker
   # ==========================================
   build-and-push:
-    name: 🐳 Construcción y Verificación de Imágenes Docker
+    name: 🐳 Construcción y Publicación de Imágenes Docker
     needs: test
     runs-on: ubuntu-latest
 
@@ -47,32 +47,50 @@ jobs:
       - name: 📥 Clonar repositorio
         uses: actions/checkout@v4
 
+      - name: 🔐 Configurar Credenciales de AWS (Si existen Secrets)
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: 🔑 Iniciar sesión en Amazon ECR
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
       - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build de Backend
-      - name: 🏗️ Construir Imagen Backend
+      # Build & Push Backend
+      - name: 🏗️ Construir y Publicar Imagen Backend
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           file: ./backend/Dockerfile
-          push: false
-          tags: devops-backend:latest
+          push: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+          tags: |
+            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend:latest
+            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend:v${{ github.run_number }}
 
-      # Build de Frontend
-      - name: 🏗️ Construir Imagen Frontend
+      # Build & Push Frontend
+      - name: 🏗️ Construir y Publicar Imagen Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: false
-          tags: devops-frontend:latest
+          push: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+          tags: |
+            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend:latest
+            571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend:v${{ github.run_number }}
 
   # ==========================================
-  # ETAPA 3: Despliegue Automatizado en AWS
+  # ETAPA 3: Despliegue Automatizado en AWS EKS
   # ==========================================
   deploy:
-    name: 🚀 Verificación de Despliegue EKS
+    name: 🚀 Despliegue Automatizado en Amazon EKS
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -81,8 +99,24 @@ jobs:
       - name: 📥 Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: 🔑 Verificación de Entorno de Producción
+      - name: 🔐 Configurar Credenciales de AWS
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: 🚀 Rollout Automático en Amazon EKS
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
         run: |
-          echo "✅ Pipeline CI/CD compilado y verificado correctamente."
-          echo "✅ Manifiestos de Kubernetes en k8s/ listos para producción."
+          aws eks update-kubeconfig --name devops-eks-cluster --region us-east-1
+          kubectl rollout restart deployment/frontend-deployment
+          kubectl rollout restart deployment/backend-deployment
+          echo "✅ Rollout v${{ github.run_number }} desplegado automáticamente en EKS."
+
+      - name: ℹ️ Resumen de Despliegue
+        run: |
+          echo "✅ Pipeline CI/CD procesado exitosamente."
 
