@@ -1,8 +1,8 @@
 # 📄 Informe Técnico de Evaluación Final Transversal
 ## Asignatura: ISY1101 - Introducción a Herramientas DevOps (Duoc UC 2025)
 
-**Integrantes del Proyecto:** [Nombre de los Estudiantes]  
-**Docente:** [Nombre del Docente]  
+**Integrante del Proyecto:** Ignacio Salazar  
+**Docente:** Rafael Vidal  
 **Fecha de Entrega:** Semana 18  
 **Institución:** Duoc UC - Escuela de Informática y Telecomunicaciones  
 **Cuenta AWS ID:** `571617431105` (`ign.salazarf@duocuc.cl`)
