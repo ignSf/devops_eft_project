@@ -49,11 +49,40 @@
         }
 
         .brand h1 {
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
+            background: linear-gradient(90deg, #a855f7, #ec4899, #38bdf8, #a855f7);
+            background-size: 300% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: shimmer 4s infinite linear;
+            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.6));
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .neon-badge {
+            font-size: 0.75rem;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: #ffffff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: 10px;
+            vertical-align: middle;
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.8);
+            letter-spacing: 0.5px;
+            display: inline-block;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(236, 72, 153, 0.6); transform: scale(1); }
+            50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.9); transform: scale(1.05); }
         }
 
         .brand p {
@@ -211,7 +240,7 @@
 <body>
     <header>
         <div class="brand">
-            <h1>🚀 Plataforma DevOps ISY1101 <span style="font-size:0.75rem; background:#a855f7; color:#ffffff; padding:0.2rem 0.6rem; border-radius:12px; font-weight:700; margin-left:8px; vertical-align:middle;">v3.0 Automatic EKS Pipeline</span></h1>
+            <h1>🚀 Plataforma DevOps ISY1101 <span class="neon-badge">✨ v4.0 Neon Glowing EKS</span></h1>
             <p>Evaluación Final Transversal | Duoc UC 2025</p>
         </div>
         <div class="status-badge">
