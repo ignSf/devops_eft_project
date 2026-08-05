@@ -4,8 +4,16 @@ const pool = require('./db');
 
 const app = express();
 
+let totalRequestsServed = 0;
+
 app.use(cors());
 app.use(express.json());
+
+// Contador global de peticiones atendidas por la API
+app.use((req, res, next) => {
+  totalRequestsServed++;
+  next();
+});
 
 // Endpoint de Health Check
 app.get('/api/health', async (req, res) => {
@@ -15,13 +23,17 @@ app.get('/api/health', async (req, res) => {
       status: 'UP',
       timestamp: dbRes.rows[0].now,
       service: 'devops-backend-api',
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'production',
+      backendVersion: 'v4.0-EKS-Live',
+      totalRequestsServed: totalRequestsServed
     });
   } catch (error) {
     res.status(500).json({
       status: 'DOWN',
       error: error.message,
-      service: 'devops-backend-api'
+      service: 'devops-backend-api',
+      backendVersion: 'v4.0-EKS-Live',
+      totalRequestsServed: totalRequestsServed
     });
   }
 });
@@ -31,6 +43,8 @@ app.get('/api/metrics', (req, res) => {
   const memoryUsage = process.memoryUsage();
   res.status(200).json({
     uptimeSeconds: Math.floor(process.uptime()),
+    totalRequestsServed: totalRequestsServed,
+    backendVersion: 'v4.0-EKS-Live',
     memoryUsageMB: {
       rss: Math.round(memoryUsage.rss / 1024 / 1024),
       heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),

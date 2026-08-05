@@ -241,7 +241,7 @@
     <header>
         <div class="brand">
             <h1>🚀 Plataforma DevOps ISY1101 <span class="neon-badge">✨ v4.0 Neon Glowing EKS</span></h1>
-            <p>Evaluación Final Transversal | Duoc UC 2025</p>
+            <p>Evaluación Final Transversal | Duoc UC 2026</p>
         </div>
         <div class="status-badge">
             <div id="statusDot" class="dot"></div>
@@ -252,7 +252,7 @@
     <div class="grid">
         <!-- Tarjeta Health status -->
         <div class="card">
-            <h2>🏥 Estado del Backend API</h2>
+            <h2>🏥 Estado del Backend API <span id="reqCounter" style="font-size:0.75rem; background:rgba(236,72,153,0.25); color:#ec4899; border:1px solid #ec4899; padding:0.15rem 0.55rem; border-radius:12px; margin-left:8px; font-weight:700;">Reqs API: #0</span></h2>
             <div id="apiStatus" class="metric-val">--</div>
             <div id="apiEnv" class="metric-sub">Entorno: Desconocido</div>
         </div>
@@ -302,7 +302,10 @@
                     dot.className = 'dot healthy';
                     statusText.innerText = 'Sistema 100% Funcional';
                     document.getElementById('apiStatus').innerText = 'UP';
-                    document.getElementById('apiEnv').innerText = `Entorno: ${data.environment} | DB: PostgreSQL Connected`;
+                    document.getElementById('apiEnv').innerText = `Entorno: ${data.environment} | DB: PostgreSQL Connected | API: ${data.backendVersion || 'v4.0'}`;
+                    if (data.totalRequestsServed !== undefined) {
+                        document.getElementById('reqCounter').innerText = `Reqs API: #${data.totalRequestsServed}`;
+                    }
                 } else {
                     dot.className = 'dot unhealthy';
                     statusText.innerText = 'Error en el servicio';
