@@ -49,6 +49,11 @@ a90124b feat: add animated neon shimmer title effect and v4.0 badge for EKS depl
 
 > **Verificación Técnica:** Muestra la estructura de archivos en la rama principal `main` del repositorio `https://github.com/ignSf/devops_eft_project`, confirmando la presencia de las carpetas `frontend`, `k8s`, `.github/workflows` y los documentos de arquitectura de software.
 
+#### 📸 Evidencia 15: Verificación de Contenerización y Orquestación Local con Docker Compose
+![Evidencia 15 - Contenerización Docker](docs/images/evidencia_15_docker_compose_terminal.png)
+
+> **Verificación Técnica:** Muestra la ejecución de `docker-compose ps` y `docker images`, confirmando los 3 contenedores activos (`devops_backend_api`, `devops_frontend_web`, `devops_postgres_db`) en estado **Up (healthy)** y las imágenes locales compiladas.
+
 ---
 
 ### 2️⃣ PASO 2: Seguridad y Configuración de Secrets en GitHub (IE3)
