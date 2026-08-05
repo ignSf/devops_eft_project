@@ -93,6 +93,14 @@ def create_report():
             r = p.add_run("_________________________________________________________________________________")
             r.font.color.rgb = RGBColor(203, 213, 225)
 
+        elif line_str.startswith("![") and "](" in line_str:
+            img_path = line_str.split("](")[1].rstrip(")")
+            if os.path.exists(img_path):
+                p = doc.add_paragraph()
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = p.add_run()
+                run.add_picture(img_path, width=Inches(5.8))
+
         else:
             p = doc.add_paragraph()
             parts = line_str.split("**")
