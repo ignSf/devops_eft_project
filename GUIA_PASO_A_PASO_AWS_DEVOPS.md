@@ -2,7 +2,7 @@
 
 > **Proyecto:** Plataforma DevOps EFT — ISY1101 Duoc UC  
 > **Cuenta AWS:** `571617431105` (`ign.salazarf@duocuc.cl`)  
-> **VPC ID:** `vpc-07961c4882b2d88f6`  
+> **VPC ID:** `vpc-07772e6acab483468`  
 > **Cluster Security Group:** `sg-0cdefee98e5f938b6` (`devops-eks-cluster-sg`)  
 > **Workers Security Group:** `sg-0289686b9df8f66b4` (`devops-eks-workers-sg`)  
 > **Subredes Públicas:** `subnet-0662c9236328b212f` (us-east-1a) | `subnet-0105335a59a4c7aa7` (us-east-1b)  
@@ -22,7 +22,7 @@ export AWS_ACCESS_KEY_ID="TU_ACCESS_KEY"
 export AWS_SECRET_ACCESS_KEY="TU_SECRET_KEY"
 export AWS_SESSION_TOKEN="TU_SESSION_TOKEN"
 export AWS_DEFAULT_REGION="us-east-1"
-export VPC_ID="vpc-07961c4882b2d88f6"
+export VPC_ID="vpc-07772e6acab483468"
 export CLUSTER_SG_ID="sg-0cdefee98e5f938b6"
 export WORKERS_SG_ID="sg-0289686b9df8f66b4"
 export PUBLIC_SUBNET_1A_ID="subnet-0662c9236328b212f"
@@ -52,12 +52,12 @@ aws ec2 create-vpc \
   --query "Vpc.VpcId" --output text
 ```
 
-Tu VPC ID real asignado es `vpc-07961c4882b2d88f6`.
+Tu VPC ID real asignado es `vpc-07772e6acab483468`.
 
 ```bash
 # Habilitar resolución DNS y hostnames DNS en la VPC (OBLIGATORIO para EKS)
-aws ec2 modify-vpc-attribute --vpc-id vpc-07961c4882b2d88f6 --enable-dns-support "{\"Value\":true}"
-aws ec2 modify-vpc-attribute --vpc-id vpc-07961c4882b2d88f6 --enable-dns-hostnames "{\"Value\":true}"
+aws ec2 modify-vpc-attribute --vpc-id vpc-07772e6acab483468 --enable-dns-support "{\"Value\":true}"
+aws ec2 modify-vpc-attribute --vpc-id vpc-07772e6acab483468 --enable-dns-hostnames "{\"Value\":true}"
 ```
 
 ---
@@ -71,7 +71,7 @@ Amazon EKS requiere **mínimo 2 subredes en distintas Availability Zones (AZ)**.
 ```bash
 # Subred Pública en AZ us-east-1a (256 IPs)
 aws ec2 create-subnet \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --cidr-block 10.0.1.0/24 \
   --availability-zone us-east-1a \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=devops-public-subnet-1a},{Key=kubernetes.io/role/elb,Value=1},{Key=kubernetes.io/cluster/devops-eks-cluster,Value=shared}]" \
@@ -79,7 +79,7 @@ aws ec2 create-subnet \
 
 # Subred Pública en AZ us-east-1b (256 IPs)
 aws ec2 create-subnet \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --cidr-block 10.0.2.0/24 \
   --availability-zone us-east-1b \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=devops-public-subnet-1b},{Key=kubernetes.io/role/elb,Value=1},{Key=kubernetes.io/cluster/devops-eks-cluster,Value=shared}]" \
@@ -97,7 +97,7 @@ aws ec2 modify-subnet-attribute --subnet-id subnet-0105335a59a4c7aa7 --map-publi
 ```bash
 # Subred Privada en AZ us-east-1a
 aws ec2 create-subnet \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --cidr-block 10.0.10.0/24 \
   --availability-zone us-east-1a \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=devops-private-subnet-1a},{Key=kubernetes.io/role/internal-elb,Value=1},{Key=kubernetes.io/cluster/devops-eks-cluster,Value=shared}]" \
@@ -105,7 +105,7 @@ aws ec2 create-subnet \
 
 # Subred Privada en AZ us-east-1b
 aws ec2 create-subnet \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --cidr-block 10.0.20.0/24 \
   --availability-zone us-east-1b \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=devops-private-subnet-1b},{Key=kubernetes.io/role/internal-elb,Value=1},{Key=kubernetes.io/cluster/devops-eks-cluster,Value=shared}]" \
@@ -127,7 +127,7 @@ aws ec2 create-internet-gateway \
 # Adjuntar IGW a la VPC
 aws ec2 attach-internet-gateway \
   --internet-gateway-id <IGW_ID> \
-  --vpc-id vpc-07961c4882b2d88f6
+  --vpc-id vpc-07772e6acab483468
 ```
 
 ---
@@ -163,7 +163,7 @@ aws ec2 create-nat-gateway \
 
 ```bash
 # Crear tabla de ruteo pública
-aws ec2 create-route-table --vpc-id vpc-07961c4882b2d88f6 \
+aws ec2 create-route-table --vpc-id vpc-07772e6acab483468 \
   --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=devops-public-rt}]" \
   --query "RouteTable.RouteTableId" --output text
 
@@ -182,7 +182,7 @@ aws ec2 associate-route-table --route-table-id <PUBLIC_RT_ID> --subnet-id subnet
 
 ```bash
 # Crear tabla de ruteo privada
-aws ec2 create-route-table --vpc-id vpc-07961c4882b2d88f6 \
+aws ec2 create-route-table --vpc-id vpc-07772e6acab483468 \
   --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=devops-private-rt}]" \
   --query "RouteTable.RouteTableId" --output text
 
@@ -203,12 +203,12 @@ aws ec2 associate-route-table --route-table-id <PRIVATE_RT_ID> --subnet-id subne
 
 ```bash
 # Listar todas las subredes de la VPC
-aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-07961c4882b2d88f6" \
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-07772e6acab483468" \
   --query "Subnets[*].[SubnetId, CidrBlock, AvailabilityZone, Tags[?Key=='Name'].Value|[0]]" \
   --output table
 
 # Listar tablas de ruteo
-aws ec2 describe-route-tables --filters "Name=vpc-id,Values=vpc-07961c4882b2d88f6" \
+aws ec2 describe-route-tables --filters "Name=vpc-id,Values=vpc-07772e6acab483468" \
   --query "RouteTables[*].[RouteTableId, Tags[?Key=='Name'].Value|[0]]" \
   --output table
 ```
@@ -223,7 +223,7 @@ aws ec2 describe-route-tables --filters "Name=vpc-id,Values=vpc-07961c4882b2d88f
 aws ec2 create-security-group \
   --group-name devops-eks-cluster-sg \
   --description "Security Group para el Control Plane de EKS" \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=devops-eks-cluster-sg}]" \
   --query "GroupId" --output text
 ```
@@ -240,7 +240,7 @@ aws ec2 authorize-security-group-ingress --group-id sg-0cdefee98e5f938b6 --proto
 aws ec2 create-security-group \
   --group-name devops-eks-workers-sg \
   --description "Security Group para los Nodos Worker del Cluster EKS" \
-  --vpc-id vpc-07961c4882b2d88f6 \
+  --vpc-id vpc-07772e6acab483468 \
   --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=devops-eks-workers-sg}]" \
   --query "GroupId" --output text
 ```
@@ -273,7 +273,7 @@ aws ec2 authorize-security-group-ingress --group-id sg-0289686b9df8f66b4 --proto
 
 ```bash
 aws ec2 describe-security-groups \
-  --filters "Name=vpc-id,Values=vpc-07961c4882b2d88f6" \
+  --filters "Name=vpc-id,Values=vpc-07772e6acab483468" \
   --query "SecurityGroups[*].[GroupId, GroupName, Description]" --output table
 
 # Ver reglas de entrada detalladas del SG de Workers
@@ -599,7 +599,7 @@ aws ec2 delete-security-group --group-id sg-0289686b9df8f66b4
 aws ec2 delete-security-group --group-id sg-0cdefee98e5f938b6
 
 # 7. Desasociar y eliminar Internet Gateway
-aws ec2 detach-internet-gateway --internet-gateway-id <IGW_ID> --vpc-id vpc-07961c4882b2d88f6
+aws ec2 detach-internet-gateway --internet-gateway-id <IGW_ID> --vpc-id vpc-07772e6acab483468
 aws ec2 delete-internet-gateway --internet-gateway-id <IGW_ID>
 
 # 8. Eliminar Subredes

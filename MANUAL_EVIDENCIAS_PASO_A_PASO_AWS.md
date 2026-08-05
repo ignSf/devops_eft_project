@@ -10,7 +10,7 @@ Este manual documenta el paso a paso detallado de la infraestructura real constr
 | :--- | :--- | :--- |
 | **AWS Account ID** | `571617431105` | Estudiante Duoc UC (`ign.salazarf@duocuc.cl`) |
 | **Región Cloud** | `us-east-1` (EE.UU. N. Virginia) | AWS Cloud Sandbox / Learner Lab |
-| **Virtual Private Cloud (VPC)** | `vpc-07961c4882b2d88f6` | Red aislada con rango de red `172.31.0.0/16` |
+| **Virtual Private Cloud (VPC)** | `vpc-07772e6acab483468` | Red aislada con rango de red `172.31.0.0/16` |
 | **Subredes (Subnets)** | Pública 1a: `subnet-0662c9236328b212f`<br>Pública 1b: `subnet-0105335a59a4c7aa7`<br>Privada 1a: `subnet-0ff56fe4910477203`<br>Privada 1b: `subnet-06644b3d366c360c2` | Subredes públicas/privadas en múltiples Zonas de Disponibilidad (Multi-AZ) |
 | **Security Group** | Workers: `sg-0289686b9df8f66b4` (`devops-eks-workers-sg`) <br>Control Plane: `sg-0cdefee98e5f938b6` (`devops-eks-cluster-sg`) | Ingress: Puerto 80 (HTTP), Puerto 5000 (API), Puerto 22 (SSH) |
 | **Amazon EKS Cluster** | `devops-eks-cluster` | ARN: `arn:aws:eks:us-east-1:571617431105:cluster/devops-eks-cluster` |
@@ -123,13 +123,13 @@ Tests:       4 passed, 4 total
 
 #### 📝 Comandos AWS CLI ejecutados:
 ```bash
-aws ec2 describe-vpcs --vpc-ids vpc-07961c4882b2d88f6
+aws ec2 describe-vpcs --vpc-ids vpc-07772e6acab483468
 aws ec2 describe-security-groups --group-ids sg-0289686b9df8f66b4
 ```
 
 #### 🖥️ Salida real de Terminal AWS:
 ```text
-VPC: vpc-07961c4882b2d88f6 | CIDR: 172.31.0.0/16 | Status: available
+VPC: vpc-07772e6acab483468 | CIDR: 172.31.0.0/16 | Status: available
 Security Group: sg-0289686b9df8f66b4 (sg_devops_eft)
 Rules:
   - Ingress: TCP 80 (0.0.0.0/0)  -> Frontend Web Nginx
@@ -139,7 +139,7 @@ Rules:
 
 #### 📸 Captura a tomar #5:
 > **Dónde sacarla:** En la **Consola Web de AWS**.
-> * Ir a **VPC** -> Seleccionar `vpc-07961c4882b2d88f6` (Foto de la VPC y Subredes).
+> * Ir a **VPC** -> Seleccionar `vpc-07772e6acab483468` (Foto de la VPC y Subredes).
 > * Ir a **EC2** -> **Security Groups** -> Seleccionar `sg_devops_eft` (`sg-0289686b9df8f66b4`) mostrando la pestaña **Inbound Rules** con los puertos 80, 5000 y 22.
 
 ---
