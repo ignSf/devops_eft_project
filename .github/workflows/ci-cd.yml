@@ -98,8 +98,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
-      - name: 🚀 Actualizar Servicio AWS ECS / Despliegue
+      - name: 🚀 Desplegar en Amazon EKS
         run: |
-          echo "Simulando/Ejecutando actualización de servicio en AWS ECS..."
-          # aws ecs update-service --cluster devops-cluster --service devops-service --force-new-deployment
-          echo "✅ Despliegue completado con éxito en AWS Cloud."
+          # Configurar kubectl para conectarse al clúster EKS
+          aws eks update-kubeconfig --name devops-eks-cluster --region ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+          # Actualizar las imágenes en los manifiestos K8s con la nueva versión
+          kubectl set image deployment/backend-deployment \
+            backend-api=${{ secrets.AWS_ACCOUNT_ID || '571617431105' }}.dkr.ecr.${{ secrets.AWS_REGION || 'us-east-1' }}.amazonaws.com/devops-backend:v${{ github.run_number }} \
+            --record
+
+          kubectl set image deployment/frontend-deployment \
+            frontend-web=${{ secrets.AWS_ACCOUNT_ID || '571617431105' }}.dkr.ecr.${{ secrets.AWS_REGION || 'us-east-1' }}.amazonaws.com/devops-frontend:v${{ github.run_number }} \
+            --record
+
+          # Verificar el estado del despliegue
+          kubectl rollout status deployment/backend-deployment --timeout=120s
+          kubectl rollout status deployment/frontend-deployment --timeout=120s
+
+          # Mostrar estado final
+          kubectl get pods,svc,deployments -o wide
+          echo "✅ Despliegue v${{ github.run_number }} completado con éxito en Amazon EKS."
+

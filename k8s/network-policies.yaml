@@ -1,0 +1,46 @@
+# NetworkPolicy: Solo el backend puede comunicarse con la base de datos (puerto 5432)
+# Implementa el principio de mínimo privilegio a nivel de red en Kubernetes
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: database-network-policy
+  labels:
+    app: postgres
+    tier: database
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: devops-backend
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+# NetworkPolicy: El backend solo acepta tráfico del frontend (puerto 5000)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-network-policy
+  labels:
+    app: devops-backend
+    tier: api
+spec:
+  podSelector:
+    matchLabels:
+      app: devops-backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: devops-frontend
+    ports:
+    - protocol: TCP
+      port: 5000
