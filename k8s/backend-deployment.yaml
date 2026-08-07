@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: backend-api
-        image: 571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend:latest
+        image: 571617431105.dkr.ecr.us-east-1.amazonaws.com/test-devops-backend-ecr:latest
         ports:
         - containerPort: 5000
           name: http-api

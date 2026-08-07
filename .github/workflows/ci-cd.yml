@@ -8,9 +8,9 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  EKS_CLUSTER_NAME: devops-eks-cluster
-  ECR_BACKEND_IMAGE: ${{ secrets.ECR_BACKEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-backend' }}
-  ECR_FRONTEND_IMAGE: ${{ secrets.ECR_FRONTEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend' }}
+  EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME || 'CLUSTER-EKS-TEST-REAL' }}
+  ECR_BACKEND_IMAGE: ${{ secrets.ECR_BACKEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/test-devops-backend-ecr' }}
+  ECR_FRONTEND_IMAGE: ${{ secrets.ECR_FRONTEND_REPOSITORY || '571617431105.dkr.ecr.us-east-1.amazonaws.com/test-devops-frontend-ecr' }}
 
 jobs:
   # ==========================================
@@ -111,10 +111,16 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: 🚀 Rollout Automático en Amazon EKS
+      - name: 🚀 Aplicar Manifiestos Dinámicos y Rollout en Amazon EKS
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
-          kubectl rollout restart deployment/frontend-deployment
-          kubectl rollout restart deployment/backend-deployment
-          echo "✅ Rollout v${{ github.run_number }} desplegado automáticamente en EKS."
+          
+          # Inyección dinámica de imágenes desde variables de entorno de CI/CD
+          sed -i "s|image:.*|image: ${{ env.ECR_BACKEND_IMAGE }}:latest|g" k8s/backend-deployment.yaml
+          sed -i "s|image:.*|image: ${{ env.ECR_FRONTEND_IMAGE }}:latest|g" k8s/frontend-deployment.yaml
+          
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment/frontend-deployment || true
+          kubectl rollout restart deployment/backend-deployment || true
+          echo "✅ Despliegue v${{ github.run_number }} completado con éxito en EKS."
 

@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: frontend-web
-        image: 571617431105.dkr.ecr.us-east-1.amazonaws.com/devops-frontend:latest
+        image: 571617431105.dkr.ecr.us-east-1.amazonaws.com/test-devops-frontend-ecr:latest
         ports:
         - containerPort: 80
           name: http-web
